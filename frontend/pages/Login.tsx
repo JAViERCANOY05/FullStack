@@ -1,33 +1,42 @@
 import Link from "next/link";
 import { useState } from "react";
+import LoginApi from "./api/loginApi";
 
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-
-  const handleSubmit = (event : any )=>
-    {
-      event.preventDefault();
-      console.log("email " , email);
-      console.log("password " , password);
-
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    try {
+      const response = await LoginApi.logIn(formData);
+      if (response.status) {
+        console.log("Login Successfully!");
+      } else {
+        console.log("Wrong credentials");
+      }
+    } catch (error) {
+      console.log(error);
     }
+    event.preventDefault();
+  };
 
-    const handleEmailChange = (event : any ) => {
-      setEmail(event.target.value); // Updating email state as the user types
-    };
-  
-
-    const handlePasswordChange= (event : any ) => {
-      setPassword(event.target.value); // Updating email state as the user types
-    };
-  
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
       <div className="w-full p-6 rounded-xl shadow-xl border-y-slate-700 bg-slate-200 lg:max-w-xl border-none py-20">
-        <h1 className="text-3xl font-bold text-center text-white my-20  rounded-full border-2 p-2 bg-slate-500 ">JAViER</h1>
+        <h1 className="text-3xl font-bold text-center text-white my-20  rounded-full border-2 p-2 bg-slate-500 ">
+          JAViER
+        </h1>
         <form onSubmit={handleSubmit} className="mt-6">
           <div className="mb-4">
             <label
@@ -38,8 +47,10 @@ export default function Home() {
             </label>
             <input
               type="email"
-              value={email} 
-              onChange={handleEmailChange} 
+              value={formData.email}
+              id="email"
+              name="email"
+              onChange={handleChange}
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md focus:border-gray-400 focus:ring-gray-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
           </div>
@@ -52,8 +63,10 @@ export default function Home() {
             </label>
             <input
               type="password"
-              value={password} 
-              onChange={handlePasswordChange} 
+              value={formData.password}
+              onChange={handleChange}
+              id="password"
+              name="password"
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md focus:border-gray-400 focus:ring-gray-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
           </div>
@@ -81,5 +94,5 @@ export default function Home() {
         </p>
       </div>
     </div>
-  )
+  );
 }
