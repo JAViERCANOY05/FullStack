@@ -1,0 +1,78 @@
+//CREATE ROOM
+// app.post('/api/rooms',async(req , res) =>
+// {   
+   
+//     try {
+//         const room = await Room.create(req.body);
+//         res.status(200).json(room);
+//     } catch (error) {
+//         res.status(500).json({message : error.message});
+//     }
+// })
+
+// //GETALLROOMS
+// app.get('/api/rooms',async(req , res) =>
+// {   
+    
+//     try {
+//         const rooms = await Room.find({});
+//         res.status(200).json(rooms);
+//     } catch (error) {
+//         res.status(500).json({message : error.message});
+//     }
+// })
+
+//GET Room By ID 
+// app.get('/api/rooms/:id',async(req , res) =>
+// {   
+//     try {
+//         const { id } = req.params;
+//         const room = await Room.findById(id)
+//         res.status(200).json(room)
+//     } catch (error) {
+//         res.status(500).json({message : error.message});
+//     }
+// })
+
+//UPDATE Room By ID 
+// app.put('/api/rooms/:id',async(req , res) =>
+// {   
+//     try {
+//         const { id } = req.params;
+//         const room = await Room.findByIdAndUpdate(id,req.body)
+
+//         if(!room){
+//             return res.status(404).json({ message : "Not found ! " });
+//         }
+
+//         const roomUpdate = await Room.findById(id);
+//         const successResponse = {
+//             message : "Updated",
+//             roomUpdate
+//         }
+
+//         res.status(200).json(successResponse)
+
+//     } catch (error) {
+//         res.status(500).json({message : error.message});
+//     }
+// })
+
+//DELETE Room By ID 
+// app.delete('/api/rooms/:id',async(req , res) =>
+// {   
+//     try {
+//         const { id } = req.params;
+//         const room = await Room.findByIdAndDelete(id,req.body)
+        
+//         if(!room){
+//             return res.status(404).json({ message : "Room Id Not found !" });
+//         }
+
+
+//         res.status(200).json({message : "Successfully Delete ! " , id : id});
+
+//     } catch (error) {
+//         res.status(500).json({message : error.message });
+//     }
+// })
