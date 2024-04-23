@@ -1,5 +1,8 @@
 const User = require('../models/user.model.js');
 const bcrypt = require("bcrypt");
+const jsonwebtoken = require("jsonwebtoken");
+
+
 
 
 
@@ -114,6 +117,29 @@ const getUser = async(req , res) =>
 
 }
 
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const existUser = await User.findOne({ email });
+    if (!existUser) {
+      return res.status(400).json({ message: "Wrong credentials."});
+    }
+    const isMatch = await bcrypt.compare(password, existUser.password); // Note: await here
+    
+    if (!isMatch) {
+      return res.status(400).json({ message: "Wrong credentials." });
+    }
+    
+  
+    
+    return res.status(200).json({ message: "Login Successfully." }); // Include the token in the response
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong.  " , error: process.env.secretKey });
+  }
+};
+
 
 
 module.exports = {
@@ -121,5 +147,6 @@ module.exports = {
     deleteUser,
     getUsers,
     updateUser,
-    getUser
+    getUser,
+    login
 }
