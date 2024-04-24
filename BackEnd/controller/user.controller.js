@@ -1,10 +1,27 @@
 const User = require('../models/user.model.js');
 const bcrypt = require("bcrypt");
-const jsonwebtoken = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 
-
-
+// const verifyToken = (req , res , next) =>
+// {
+//   const authHeader = req.headers.authrization ;
+//   if(authHeader)
+//   {
+//       const token = authHeader.split(" ")[1];
+//       jwt.verify(token , "mySecretKey",(err , user) =>
+//     {
+//       if(err)
+//       {
+//         return res.status(403).json("Token is not valid!");
+//       }
+//       req.user = user ;
+//       next();
+//     })
+//   }else{
+//     res.status(401).json("You are not authenticated!");
+//   }
+// }
 
 const postUser = async (req , res )=>
 {
@@ -30,23 +47,60 @@ const postUser = async (req , res )=>
 
 }
 
-const deleteUser = async(req , res) =>
-{
+// const deleteUser = async(req , res) =>
+// {
    
-        try {
-        const { id } = req.params;
-        const user = await User.findByIdAndDelete(id,req.body)
+//         try {
+//         const { id } = req.params;
+//         const user = await User.findByIdAndDelete(id,req.body)
         
-        if(!user){
-            return res.status(404).json({ message : "User Id Not found." });
-        }
-        res.status(200).json({message : "Successfully Deleted."});
+//         if(!user){
+//             return res.status(404).json({ message : "User Id Not found." });
+//         }
+//         res.status(200).json({message : "Successfully Deleted."});
 
-    } catch (error) {
-        res.status(500).json({message : error.message });
-    }
+//     } catch (error) {
+//         res.status(500).json({message : error.message });
+//     }
 
-}
+// }
+const deleteUser = async (req, res) => {
+  try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+          return res.status(401).json({ message: "You are not authenticated!" });
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      jwt.verify(token, "mySecretKey", async (err, user) => {
+
+          if (err) {
+              return res.status(403).json({ message: "Token is not valid!" });
+          }
+
+          const { id } = req.params;
+          const userToDelete = await User.findById(id);
+
+          if (!userToDelete) {
+              return res.status(404).json({ message: "User Id Not found." });
+          }
+
+          // Check if the authenticated user is the owner of the user to be deleted
+          if (user.role !=='admin') {
+            
+              return res.status(403).json({ message: "You are not authorized to delete this user."  });
+          }
+
+          // If the authenticated user is authorized, proceed with deletion
+          await User.findByIdAndDelete(id);
+          res.status(200).json({ message: "Successfully Deleted." });
+      });
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
 
 const getUsers =  async(req , res) =>
 {   
@@ -71,7 +125,7 @@ const updateUser = async(req , res) =>
         data.password = await bcrypt.hash(data.password, 8);
         const user = await User.findByIdAndUpdate(id, data, { new: true });
 
-              const response = {
+        const response = {
             message : "Successfully Updated.",
             user
         }
@@ -119,24 +173,23 @@ const getUser = async(req , res) =>
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const existUser = await User.findOne({ email });
-    if (!existUser) {
+    const { email, password , _id  } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
       return res.status(400).json({ message: "Wrong credentials."});
     }
-    const isMatch = await bcrypt.compare(password, existUser.password); // Note: await here
+    const token = jwt.sign({ _id : _id , role : user.role   } , "mySecretKey");
+    const isMatch = await bcrypt.compare(password, user.password); // Note: await here
     
     if (!isMatch) {
       return res.status(400).json({ message: "Wrong credentials." });
     }
     
-  
-    
-    return res.status(200).json({ message: "Login Successfully." }); // Include the token in the response
+    return res.status(200).json({  message : "Login Successfully" , token ,  user  }); // Include the token in the response
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Something went wrong.  " , error: process.env.secretKey });
+      .json({ message: "Something went wrong.  "});
   }
 };
 
@@ -148,5 +201,5 @@ module.exports = {
     getUsers,
     updateUser,
     getUser,
-    login
-}
+    login , 
+} 

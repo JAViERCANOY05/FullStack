@@ -6,13 +6,18 @@ const UserSchema = mongoose.Schema(
   {
     email: {
       type: String,
-      require: [true, "Please Enter your Email."],
+      required: [true, "Please Enter your Email."],
       unique: true, // Ensure uniqueness
     },
     password: {
       type: String,
-      require: [true, "Please Enre tour Password."],
-      minlength :  [8, "Must have at least 8 characters."],
+      required: [true, "Please Enter your Password."],
+      minlength: [8, "Must have at least 8 characters."],
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"], // Define roles as "user" or "admin"
+      default: "user", // Set default role as "user"
     },
   },
   {
