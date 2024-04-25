@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import LoginApi from "./api/loginApi";
+import { useRouter } from "next/navigation"; // Correct import
+
 
 export default function Home() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,11 +16,15 @@ export default function Home() {
     event.preventDefault();
     try {
       const response = await LoginApi.logIn(formData);
-      if (response.status) {
-        console.log("Login Successfully!");
-      } else {
-        console.log("Wrong credentials");
+      if ( response.user.role == "user") {
+        
+        console.log("Login Successfully!" , response.user.role);
+        router.push("./dashboard/userDashboard");
+      } else  if (( response.user.role == "admin")){
+        console.log("Login Successfully!" , response.user.role);
+        router.push("./dashboard/adminDashBoard");
       }
+
     } catch (error) {
       console.log(error);
     }
