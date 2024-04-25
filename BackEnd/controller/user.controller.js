@@ -32,7 +32,7 @@ const postUser = async (req , res )=>
             // console.log(user.password , "=============" , hash);
 
             const response = {
-                message : "Successfully Created.",
+                message : "Account Successfully Created.",
                 user
             }
 
@@ -47,59 +47,61 @@ const postUser = async (req , res )=>
 
 }
 
-// const deleteUser = async(req , res) =>
-// {
+const deleteUser = async(req , res) =>
+{
    
-//         try {
-//         const { id } = req.params;
-//         const user = await User.findByIdAndDelete(id,req.body)
+        try {
+
+        const { id } = req.params;
+        const user = await User.findByIdAndDelete(id,req.body)
         
-//         if(!user){
-//             return res.status(404).json({ message : "User Id Not found." });
-//         }
-//         res.status(200).json({message : "Successfully Deleted."});
+        if(!user){
+            return res.status(404).json({ message : "User Id Not found." });
+        }
+        res.status(200).json({message : "Successfully Deleted."});
 
-//     } catch (error) {
-//         res.status(500).json({message : error.message });
-//     }
+    } catch (error) {
+        res.status(500).json({message : error.message });
+    }
 
-// }
-const deleteUser = async (req, res) => {
-  try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-          return res.status(401).json({ message: "You are not authenticated!" });
-      }
+}
+// const deleteUser = async (req, res) => {
+//   try {
+//       const authHeader = req.headers.authorization;
+//       if (!authHeader) {
+//           return res.status(401).json({ message: "You are not authenticated!" });
+//       }
 
-      const token = authHeader.split(" ")[1];
+//       const token = authHeader.split(" ")[1];
 
-      jwt.verify(token, "mySecretKey", async (err, user) => {
+//       jwt.verify(token, "mySecretKey", async (err, user) => {
 
-          if (err) {
-              return res.status(403).json({ message: "Token is not valid!" });
-          }
+//           if (err) {
+//               return res.status(403).json({ message: "Token is not valid!" });
+//           }
 
-          const { id } = req.params;
-          const userToDelete = await User.findById(id);
+//           const { id } = req.params;
+//           const userToDelete = await User.findById(id);
 
-          if (!userToDelete) {
-              return res.status(404).json({ message: "User Id Not found." });
-          }
+//           if (!userToDelete) {
+//               return res.status(404).json({ message: "User Id Not found." });
+//           }
 
-          // Check if the authenticated user is the owner of the user to be deleted
-          if (user.role !=='admin') {
+//           // Check if the authenticated user is the owner of the user to be deleted
+//           if (user.role !=='admin') {
             
-              return res.status(403).json({ message: "You are not authorized to delete this user."  });
-          }
+//               return res.status(403).json({ message: "You are not authorized to delete this user."  });
+              
+//           }
 
-          // If the authenticated user is authorized, proceed with deletion
-          await User.findByIdAndDelete(id);
-          res.status(200).json({ message: "Successfully Deleted." });
-      });
-  } catch (error) {
-      res.status(500).json({ message: error.message });
-  }
-};
+//           // If the authenticated user is authorized, proceed with deletion
+//           await User.findByIdAndDelete(id);
+//           res.status(200).json({ message: "Successfully Deleted." });
+//       });
+//   } catch (error) {
+//       res.status(500).json({ message: error.message });
+//   }
+// };
 
 
 const getUsers =  async(req , res) =>
@@ -178,14 +180,14 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Wrong credentials."});
     }
-    const token = jwt.sign({ _id : _id , role : user.role   } , "mySecretKey");
+    const token = jwt.sign({ _id : user._id , role : user.role   } , "mySecretKey");
     const isMatch = await bcrypt.compare(password, user.password); // Note: await here
     
     if (!isMatch) {
       return res.status(400).json({ message: "Wrong credentials." });
     }
     
-    return res.status(200).json({  message : "Login Successfully" , token ,  user  }); // Include the token in the response
+    return res.status(200).json({  message : "Login Successfully" , token ,  user   }); // Include the token in the response
   } catch (error) {
     return res
       .status(500)

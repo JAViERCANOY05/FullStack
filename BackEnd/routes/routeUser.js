@@ -1,15 +1,15 @@
 const express = require('express')
 const router = express.Router();
-
-
+const permission = require("../middleware/checkPermission");
+const auth = require("../middleware/auth.js");
 const { postUser ,deleteUser  , getUsers ,updateUser , getUser , login } =  require('../controller/user.controller.js');
 
 
 //POST User
-router.post('/',postUser) ;
+router.post('/signup',postUser) ;
 
 //DELETE User
-router.delete('/:id',deleteUser) ;
+router.delete('/:id' , auth, permission("delete", "Product"),deleteUser) ;
 
 //GET Users
 router.get('/',getUsers) ;

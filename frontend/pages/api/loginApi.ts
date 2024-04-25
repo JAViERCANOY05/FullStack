@@ -12,22 +12,13 @@ const LoginAPI = {
           body: JSON.stringify(user_credentials),
         });
         if (response.ok) {
+          
           const responseData = await response.json();
-          const res = 
-          {
-            status : true ,
-            responseData
-          }
-          return res;
-        }else{
-            const res = 
-            {
-              status : false ,
-            }
-          return res;
-
+          return responseData;
         }
+
         throw new Error(response.status.toString());
+
       } catch (error) {
         throw error;
       }

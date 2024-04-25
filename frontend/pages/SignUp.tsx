@@ -1,6 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import { useState } from "react";
+import SignAPI from "./api/signUp";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { notifyError, notifySuccess, notifyWarning } from "./notifications";
+
 
 
 
@@ -12,13 +17,39 @@ const RegistartionForm = () => {
     const [password, setPassword] = useState("");
 
 
-     const handleSubmit = (event : any )=>
+     const handleSubmit =  async(event : any )=>
     {
-      event.preventDefault();
-      console.log("email " , email);
-      console.log("password " , password);
-      console.log("name " , name);
 
+      event.preventDefault();
+
+      const newUser = {
+        name : name ,
+        email : email ,
+        password : password
+      }
+
+      try {
+        const response = await SignAPI.signUp(newUser);
+        if (response.message === "Account Successfully Created.") {
+
+          console.log(response);
+          notifySuccess(response.message);
+           // Redirect to login page after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/'; // Replace '/login' with your actual login page URL
+      }, 2000);
+
+        } else {
+          notifyError(response.message);
+
+          console.log("Something Wrong !" , response);
+
+        }
+      } catch (error) {
+        notifyError("Invalid email address or password.");
+
+        console.log(error);
+      }
 
     }
 
@@ -83,9 +114,9 @@ const RegistartionForm = () => {
                     className="w-6 h-6 -ml-2"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    strokeWidth="2"
                     strokeLinecap="round"
-                    stroke-linejoin="round"
+                    strokeLinejoin="round"
                   >
                     <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                     <circle cx="8.5" cy="7" r="4" />
@@ -105,6 +136,7 @@ const RegistartionForm = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

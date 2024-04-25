@@ -4,11 +4,25 @@ const { default: mongoose } = require("mongoose");
 
 const UserSchema = mongoose.Schema(
   {
+    name : {
+      
+      type: String,
+      required: [true, "Please enter your Name."],
+
+    },
     email: {
       type: String,
-      required: [true, "Please Enter your Email."],
+      required: [true, "Please enter your Email."],
       unique: true, // Ensure uniqueness
+      validate: {
+        validator: function(v) {
+          // Regular expression to validate email format
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: props => `${props.value} is not a valid email address!`
+      }
     },
+
     password: {
       type: String,
       required: [true, "Please Enter your Password."],
