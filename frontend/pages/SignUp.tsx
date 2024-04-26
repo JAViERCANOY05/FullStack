@@ -9,7 +9,6 @@ import { notifyError, notifySuccess, notifyWarning } from "./notifications";
 
 
 
-
 const RegistartionForm = () => {
 
     const [name, setName] = useState("");
