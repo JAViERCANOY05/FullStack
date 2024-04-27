@@ -18,7 +18,9 @@ export default function Home() {
       const response = await LoginApi.logIn(formData);
       if ( response.user.role == "user") {
         
-        console.log("Login Successfully!" , response.user.role);
+        console.log("Login Successfully!" , response.Token , " this token ! ");
+        localStorage.setItem("token", response.Token);
+
         router.push("./dashboard/userDashboard");
       } else  if (( response.user.role == "admin")){
         console.log("Login Successfully!" , response.user.role);

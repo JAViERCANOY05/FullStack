@@ -3,12 +3,13 @@ const apiKey = process.env.NEXT_PUBLIC_API_URL;
 
   const GetUsers = {
     //for log-in users !
-    getUser: async () => {
+    getUser: async (token : any ) => {
       try {
-        const response = await fetch(`${apiKey}/user`, {
+        const response = await fetch(`${apiKey}/user`,  {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
